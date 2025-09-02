@@ -177,7 +177,7 @@ const BookDetail = () => {
           value={title}
           onChangeText={setTitle}
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="Enter book title"
+          placeholder="ใส่ชื่อหนังสือ"
           placeholderTextColor={color.textSecondary}
         />
         <Text style={[styles.label, { color: color.text }]}>Author *</Text>
@@ -185,7 +185,7 @@ const BookDetail = () => {
           value={author}
           onChangeText={setAuthor}
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="Enter author name"
+          placeholder="ใส่ชื่อผู้เขียน"
           placeholderTextColor={color.textSecondary}
         />
         <Text style={[styles.label, { color: color.text }]}>Description</Text>
@@ -195,7 +195,7 @@ const BookDetail = () => {
           multiline
           numberOfLines={4}
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="Enter book description"
+          placeholder="ใส่รายละเอียดหนังสือ"
           placeholderTextColor={color.textSecondary}
         />
         <Text style={[styles.label, { color: color.text }]}>Genre</Text>
@@ -203,7 +203,7 @@ const BookDetail = () => {
           value={genre}
           onChangeText={setGenre}
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="Enter genre"
+          placeholder="ใส่ประเภทหนังสือ"
           placeholderTextColor={color.textSecondary}
         />
         <Text style={[styles.label, { color: color.text }]}>Year</Text>
@@ -212,7 +212,7 @@ const BookDetail = () => {
           onChangeText={setYear}
           keyboardType="numeric"
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="Enter publication year"
+          placeholder="ใส่ปีที่พิมพ์"
           placeholderTextColor={color.textSecondary}
         />
         <Text style={[styles.label, { color: color.text }]}>Price</Text>
@@ -221,12 +221,12 @@ const BookDetail = () => {
           onChangeText={setPrice}
           keyboardType="numeric"
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="Enter price"
+          placeholder="ใส่ราคาหนังสือ"
           placeholderTextColor={color.textSecondary}
         />
         <View style={styles.buttonContainer}>
           <Button
-            title={loading ? "Saving..." : "Save"}
+            title={loading ? "Saving..." : "บันทึก"}
             onPress={handleUpdate}
             color={color.primary}
             disabled={loading}
@@ -239,7 +239,7 @@ const BookDetail = () => {
             style={[styles.deleteButton, { backgroundColor: color.error, opacity: loading ? 0.5 : 1 }]}
             disabled={loading}
           >
-            <Text style={styles.buttonText}>{loading ? "Deleting..." : "Delete"}</Text>
+            <Text style={styles.buttonText}>{loading ? "Deleting..." : "ลบ"}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -257,7 +257,7 @@ const BookDetail = () => {
               Confirm Deletion
             </Text>
             <Text style={[styles.modalText, { color: color.textSecondary }]}>
-              Are you sure you want to delete this book?
+              คุณแน่ใจว่าต้องการลบหนังสือเล่มนี้ใช่ไหม?
             </Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity

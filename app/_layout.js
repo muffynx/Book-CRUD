@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
   },
   navButton: {
     padding: 10,
+    
   },
   navText: {
     fontSize: 16,

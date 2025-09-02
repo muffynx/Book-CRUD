@@ -24,7 +24,7 @@ export const ThemeProvider = ({ children }) => {
       text: isDarkMode ? "#fff" : "#000",
       textSecondary: isDarkMode ? "#ccc" : "#333",
       surface: isDarkMode ? "#121212" : "#f5f5f5",
-      primary: isDarkMode ? "#bb86fc" : "#6200ee",
+      primary: isDarkMode ? "#bb86fc" : "#c9b1ebff",
       secondary: isDarkMode ? "#03dac6" : "#03dac5",
       error: isDarkMode ? "#cf6679" : "#b00020",
     },

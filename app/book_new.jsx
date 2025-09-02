@@ -70,7 +70,7 @@ const BookNew = () => {
           value={title}
           onChangeText={setTitle}
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="กรอกชื่อหนังสือ"
+          placeholder="ใส่ชื่อหนังสือ"
           placeholderTextColor={color.textSecondary}
         />
         <Text style={[styles.label, { color: color.text }]}>ผู้เขียน *</Text>
@@ -78,43 +78,43 @@ const BookNew = () => {
           value={author}
           onChangeText={setAuthor}
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="กรอกชื่อผู้เขียน"
+          placeholder="ใส่ชื่อผู้เขียน"
           placeholderTextColor={color.textSecondary}
         />
-        <Text style={[styles.label, { color: color.text }]}>Description</Text>
+        <Text style={[styles.label, { color: color.text }]}>คำอธิบาย</Text>
         <TextInput
           value={description}
           onChangeText={setDescription}
           multiline
           numberOfLines={4}
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="กรอกรายละเอียดหนังสือ"
+          placeholder="ใส่รายละเอียดหนังสือ"
           placeholderTextColor={color.textSecondary}
         />
-        <Text style={[styles.label, { color: color.text }]}>Genre</Text>
+        <Text style={[styles.label, { color: color.text }]}>ประเภท</Text>
         <TextInput
           value={genre}
           onChangeText={setGenre}
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="Enter genre"
+          placeholder="ใส่ประเภทหนังสือ"
           placeholderTextColor={color.textSecondary}
         />
-        <Text style={[styles.label, { color: color.text }]}>Year</Text>
+        <Text style={[styles.label, { color: color.text }]}>ปี</Text>
         <TextInput
           value={year}
           onChangeText={setYear}
           keyboardType="numeric"
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="Enter publication year"
+          placeholder="ใส่ปีที่พิมพ์"
           placeholderTextColor={color.textSecondary}
         />
-        <Text style={[styles.label, { color: color.text }]}>Price</Text>
+        <Text style={[styles.label, { color: color.text }]}>ราคา</Text>
         <TextInput
           value={price}
           onChangeText={setPrice}
           keyboardType="numeric"
           style={[styles.input, { color: color.text, backgroundColor: color.surface, borderColor: color.textSecondary }]}
-          placeholder="Enter price"
+          placeholder="ใส่ราคาหนังสือ"
           placeholderTextColor={color.textSecondary}
         />
         <Button
