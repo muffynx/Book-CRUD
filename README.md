@@ -28,7 +28,7 @@
     ```
 3. ตั้งค่าไฟล์ `.env` สำหรับเชื่อมต่อ MongoDB 
     ```
-    PORT=5000
+    PORT=3000
     MONGO_URI=<MongoDB>
     JWT_SECRET=<รหัสลับ>
     ```
@@ -36,7 +36,7 @@
     ```bash
     npm start
     ```
-    เซิร์ฟเวอร์จะรันที่ `http://localhost:5000`
+    เซิร์ฟเวอร์จะรันที่ `http://localhost:3000`
 
 ---
 
