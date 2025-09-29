@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator, Modal } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 import { useTheme } from "./context/ThemeContext";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -24,16 +25,38 @@ const BookDetail = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const token = await AsyncStorage.getItem("token");
-        if (!token) {
-          Alert.alert("ข้อผิดพลาด", "กรุณาลงชื่อเข้าใช้เพื่อดูรายละเอียดหนังสือ");
-          router.push("/signin");
-          return;
+        let accessToken = await AsyncStorage.getItem("accessToken");
+        if (!accessToken) {
+          const refreshToken = await SecureStore.getItemAsync("refreshToken");
+          if (refreshToken) {
+            const refreshResponse = await fetch("http://192.168.1.3:3000/api/auth/refresh-token", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ refreshToken }),
+            });
+            const refreshData = await refreshResponse.json();
+            if (refreshResponse.ok) {
+              accessToken = refreshData.accessToken;
+              await AsyncStorage.setItem("accessToken", accessToken);
+              await AsyncStorage.setItem("userId", refreshData.userId);
+            } else {
+              Alert.alert("ข้อผิดพลาด", "Session expired. Please sign in again.");
+              router.push("/signin");
+              return;
+            }
+          } else {
+            Alert.alert("ข้อผิดพลาด", "กรุณาลงชื่อเข้าใช้เพื่อดูรายละเอียดหนังสือ");
+            router.push("/signin");
+            return;
+          }
         }
+
         console.log("Fetching book with ID:", id);
         const response = await fetch(`http://192.168.1.3:3000/api/books/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
         const data = await response.json();
@@ -84,18 +107,40 @@ const BookDetail = () => {
       available,
     };
     try {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) {
-        Alert.alert("ข้อผิดพลาด", "กรุณาลงชื่อเข้าใช้เพื่ออัปเดตหนังสือ");
-        router.push("/signin");
-        return;
+      let accessToken = await AsyncStorage.getItem("accessToken");
+      if (!accessToken) {
+        const refreshToken = await SecureStore.getItemAsync("refreshToken");
+        if (refreshToken) {
+          const refreshResponse = await fetch("http://192.168.1.3:3000/api/auth/refresh-token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refreshToken }),
+          });
+          const refreshData = await refreshResponse.json();
+          if (refreshResponse.ok) {
+            accessToken = refreshData.accessToken;
+            await AsyncStorage.setItem("accessToken", accessToken);
+            await AsyncStorage.setItem("userId", refreshData.userId);
+          } else {
+            Alert.alert("ข้อผิดพลาด", "Session expired. Please sign in again.");
+            router.push("/signin");
+            return;
+          }
+        } else {
+          Alert.alert("ข้อผิดพลาด", "กรุณาลงชื่อเข้าใช้เพื่ออัปเดตหนังสือ");
+          router.push("/signin");
+          return;
+        }
       }
+
       console.log("Updating book with ID:", id, "Data:", updateData);
       const response = await fetch(`http://192.168.1.3:3000/api/books/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(updateData),
       });
@@ -119,19 +164,41 @@ const BookDetail = () => {
     console.log("handleDelete called for book ID:", id);
     setLoading(true);
     try {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) {
-        Alert.alert("ข้อผิดพลาด", "กรุณาลงชื่อเข้าใช้เพื่อลบหนังสือ");
-        router.push("/signin");
-        setLoading(false);
-        return;
+      let accessToken = await AsyncStorage.getItem("accessToken");
+      if (!accessToken) {
+        const refreshToken = await SecureStore.getItemAsync("refreshToken");
+        if (refreshToken) {
+          const refreshResponse = await fetch("http://192.168.1.3:3000/api/auth/refresh-token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refreshToken }),
+          });
+          const refreshData = await refreshResponse.json();
+          if (refreshResponse.ok) {
+            accessToken = refreshData.accessToken;
+            await AsyncStorage.setItem("accessToken", accessToken);
+            await AsyncStorage.setItem("userId", refreshData.userId);
+          } else {
+            Alert.alert("ข้อผิดพลาด", "Session expired. Please sign in again.");
+            router.push("/signin");
+            return;
+          }
+        } else {
+          Alert.alert("ข้อผิดพลาด", "กรุณาลงชื่อเข้าใช้เพื่อลบหนังสือ");
+          router.push("/signin");
+          setLoading(false);
+          return;
+        }
       }
+
       console.log("Sending DELETE request for book ID:", id);
-      console.log("Using token:", token.substring(0, 10) + "...");
+      console.log("Using token:", accessToken.substring(0, 10) + "...");
       const response = await fetch(`http://192.168.1.3:3000/api/books/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
       });

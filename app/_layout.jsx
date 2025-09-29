@@ -28,19 +28,20 @@ const CustomHeader = () => {
     checkToken();
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem("accessToken");
-      await AsyncStorage.removeItem("userId");
-      await SecureStore.deleteItemAsync("refreshToken");
-      await SecureStore.deleteItemAsync("biometricKey");
-      setIsLoggedIn(false);
-      router.replace("/");
-      setIsMenuOpen(false);
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
+const handleLogout = async () => {
+  try {
+    await AsyncStorage.removeItem("accessToken");
+    await AsyncStorage.removeItem("userId");
+    
+    // ไม่ลบ biometricKey เพื่อให้ Biometrics ยังใช้งานได้หลัง Logout
+    // ถ้าต้องการให้ลบเมื่อรีเซ็ต Biometrics ควรเพิ่มปุ่มรีเซ็ตใน UI
+    setIsLoggedIn(false);
+    router.replace("/");
+    setIsMenuOpen(false);
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
+};
 
   const isSmallScreen = screenWidth < 600;
 

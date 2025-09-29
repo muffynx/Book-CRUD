@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert,
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 import { useTheme } from "./context/ThemeContext";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 
@@ -34,17 +35,39 @@ const BookNew = () => {
       available,
     };
     try {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) {
-        Alert.alert("ข้อผิดพลาด", "กรุณาลงชื่อเข้าใช้เพื่อสร้างหนังสือ");
-        router.push("/signin");
-        return;
+      let accessToken = await AsyncStorage.getItem("accessToken");
+      if (!accessToken) {
+        const refreshToken = await SecureStore.getItemAsync("refreshToken");
+        if (refreshToken) {
+          const refreshResponse = await fetch("http://192.168.1.3:3000/api/auth/refresh-token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refreshToken }),
+          });
+          const refreshData = await refreshResponse.json();
+          if (refreshResponse.ok) {
+            accessToken = refreshData.accessToken;
+            await AsyncStorage.setItem("accessToken", accessToken);
+            await AsyncStorage.setItem("userId", refreshData.userId);
+          } else {
+            Alert.alert("ข้อผิดพลาด", "Session expired. Please sign in again.");
+            router.push("/signin");
+            return;
+          }
+        } else {
+          Alert.alert("ข้อผิดพลาด", "กรุณาลงชื่อเข้าใช้เพื่อสร้างหนังสือ");
+          router.push("/signin");
+          return;
+        }
       }
+
       const response = await fetch("http://192.168.1.3:3000/api/books", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(bookData),
       });

@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Register
 router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -17,17 +16,19 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Email already exists' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const refreshToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' }); // Token ใช้งานได้ 7 วัน
-    const user = new User({ email, password: hashedPassword, refreshToken });
+    const user = new User({ email, password: hashedPassword });
     await user.save();
+    const refreshToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    user.refreshToken = refreshToken;
+    await user.save(); // อัปเดต refreshToken
     const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.status(201).json({ message: 'User registered successfully', accessToken, refreshToken, userId: user._id });
   } catch (err) {
+    console.error('Registration error:', err); // Log รายละเอียดข้อผิดพลาด
     res.status(500).json({ message: 'Failed to register user', error: err.message });
   }
 });
 
-// Login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -52,7 +53,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Refresh Token
 router.post('/refresh-token', async (req, res) => {
   try {
     const { refreshToken } = req.body;

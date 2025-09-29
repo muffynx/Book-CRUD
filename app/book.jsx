@@ -1,3 +1,4 @@
+
 import { useRouter } from "expo-router";
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from "react";
@@ -12,6 +13,7 @@ import {
 } from "react-native";
 import { Link } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from "expo-secure-store";
 import { useTheme } from "./context/ThemeContext";
 
 const Book = () => {
@@ -22,15 +24,37 @@ const Book = () => {
 
   const fetchBooks = useCallback(async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      if (!token) {
-        Alert.alert("Error", "Please sign in to view your books");
-        router.push("/signin");
-        return;
+      setLoading(true);
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      if (!accessToken) {
+        const refreshToken = await SecureStore.getItemAsync("refreshToken");
+        if (refreshToken) {
+          const refreshResponse = await fetch("http://192.168.1.3:3000/api/auth/refresh-token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refreshToken }),
+          });
+          const refreshData = await refreshResponse.json();
+          if (refreshResponse.ok) {
+            await AsyncStorage.setItem("accessToken", refreshData.accessToken);
+            await AsyncStorage.setItem("userId", refreshData.userId);
+          } else {
+            Alert.alert("Error", "Session expired. Please sign in again.");
+            router.push("/signin");
+            return;
+          }
+        } else {
+          Alert.alert("Error", "Please sign in to view your books");
+          router.push("/signin");
+          return;
+        }
       }
+
       const response = await fetch("http://192.168.1.3:3000/api/books?page=1&limit=10", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${await AsyncStorage.getItem('accessToken')}`,
         },
       });
       const json = await response.json();
@@ -49,7 +73,6 @@ const Book = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setLoading(true);
       fetchBooks();
     }, [fetchBooks])
   );
@@ -84,6 +107,7 @@ const Book = () => {
     </View>
   );
 };
+
 export default Book;
 
 const styles = StyleSheet.create({

@@ -46,7 +46,9 @@ const SignIn = () => {
         await AsyncStorage.setItem("accessToken", data.accessToken);
         await AsyncStorage.setItem("userId", data.userId);
         await SecureStore.setItemAsync("refreshToken", data.refreshToken); // เก็บ refreshToken ใน SecureStore
-        await SecureStore.setItemAsync("biometricKey", data.refreshToken); // ใช้ refreshToken เป็น biometricKey
+        // สร้าง biometricKey ใหม่ (เช่น ใช้ timestamp + userId หรือรหัสสุ่ม)
+        const biometricKey = `${Date.now()}_${data.userId}_${Math.random().toString(36).substring(2, 15)}`;
+        await SecureStore.setItemAsync("biometricKey", biometricKey); // เก็บ biometricKey แยก
         Alert.alert("สำเร็จ", data.message || "เข้าสู่ระบบสำเร็จ");
         router.push("/book");
       } else {
@@ -60,38 +62,42 @@ const SignIn = () => {
     }
   };
 
-  const handleBiometricSuccess = async () => {
-    const accessToken = await AsyncStorage.getItem("accessToken");
-    if (accessToken) {
-      router.push("/book");
-    } else {
-      const refreshToken = await SecureStore.getItemAsync("refreshToken");
-      if (refreshToken) {
-        try {
-          const response = await fetch("http://192.168.1.3:3000/api/auth/refresh-token", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ refreshToken }),
-          });
-          const data = await response.json();
-          if (response.ok) {
-            await AsyncStorage.setItem("accessToken", data.accessToken);
-            await AsyncStorage.setItem("userId", data.userId);
-            router.push("/book");
-          } else {
-            Alert.alert("ข้อผิดพลาด", data.message || "ไม่สามารถรีเฟรช token");
-          }
-        } catch (error) {
-          console.error("Error refreshing token:", error);
-          Alert.alert("ข้อผิดพลาด", "กรุณาลงชื่อเข้าใช้ใหม่");
-        }
-      } else {
-        Alert.alert("ข้อผิดพลาด", "กรุณาลงชื่อเข้าใช้ด้วยรหัสผ่านก่อนใช้ Biometrics");
-      }
+const handleBiometricSuccess = async () => {
+  const storedBiometricKey = await SecureStore.getItemAsync("biometricKey");
+  if (!storedBiometricKey) {
+    Alert.alert("ข้อผิดพลาด", "กรุณาลงชื่อเข้าใช้ด้วยรหัสผ่านเพื่อตั้งค่า Biometrics");
+    router.push("/signin");
+    return;
+  }
+
+  try {
+    const refreshToken = await SecureStore.getItemAsync("refreshToken");
+    if (!refreshToken) {
+      Alert.alert("ข้อผิดพลาด", "ไม่มี refreshToken กรุณาลงชื่อเข้าใช้ใหม่");
+      router.push("/signin");
+      return;
     }
-  };
+
+    const response = await fetch("http://192.168.1.3:3000/api/auth/refresh-token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      await AsyncStorage.setItem("accessToken", data.accessToken);
+      await AsyncStorage.setItem("userId", data.userId);
+     
+      router.push("/book");
+    } 
+  } catch (error) {
+    
+  }
+};
+  
 
   return (
     <View style={[styles.container, { backgroundColor: color.background }]}>
