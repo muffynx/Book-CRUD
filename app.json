@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "scheme": "profileapp",
+    "name": "profileapp",
+    "slug": "profileapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "config": {
+        "fonts": [
+          "./assets/fonts/NotoSansThai-Regular.ttf"
+        ]
+      },
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "อนุญาตให้แอปนี้ใช้ Face ID เพื่อยืนยันตัวตนของคุณ",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "config": {
+        "fonts": [
+          "./assets/fonts/NotoSansThai-Regular.ttf",
+          "./assets/fonts/NotoSansThai-Regular.ttf"
+        ]
+      },
+      "package": "com.anonymous.profileapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "config": {
+        "fonts": [
+          "./assets/fonts/NotoSansThai-Regular.ttf"
+        ]
+      },
+      "plugins": [
+        "expo-router"
+      ],
+      "assetBundlePatterns": [
+        "**/*",
+        "assets/fonts/*"
+      ],
+      "assets": [
+        "./assets/fonts/"
+      ]
+    },
+    "plugins": [
+      "expo-font",
+      "expo-secure-store"
+    ]
+  }
+}
